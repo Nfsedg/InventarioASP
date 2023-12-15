@@ -6,101 +6,103 @@ using SistemaInventario.Utilidades;
 namespace SistemaInventario.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class BodegaController : Controller
-    {
-        private readonly IUnidadTrabajo _unidadTrabajo;
-        public BodegaController(IUnidadTrabajo unidadTrabajo)
+        public class BodegaController : Controller
         {
-            _unidadTrabajo = unidadTrabajo;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> Upsert (int? id)
-        {
-            Bodega bodega = new Bodega();
-            if(id == null)
+            private readonly IUnidadTrabajo _unidadTrabajo;
+            public BodegaController(IUnidadTrabajo unidadTrabajo)
             {
-                // crear una nueva bodega
-                bodega.Estado = true;
+                _unidadTrabajo = unidadTrabajo;
+            }
+
+            public IActionResult Index()
+            {
+                return View();
+            }
+
+            public async Task<IActionResult> Upsert(int? id)
+            {
+                Bodega bodega = new Bodega();
+                if (id == null)
+                {
+                    // crear una nueva bodega
+                    bodega.Estado = true;
+                    return View(bodega);
+                }
+                //Actualizamos Bodega
+                bodega = await _unidadTrabajo.Bodega.Obtener(id.GetValueOrDefault());
+                if (bodega == null)
+                {
+                    return NotFound();
+                }
                 return View(bodega);
             }
-            //Actualizamos Bodega
-            bodega = await _unidadTrabajo.Bodega.Obtener(id.GetValueOrDefault());
-            if(bodega == null)
-            {
-                return NotFound();
-            }
-            return View(bodega);
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(Bodega bodega)
-        {
-            if (ModelState.IsValid)
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Upsert(Bodega bodega)
             {
-                if (bodega.Id == 0)
+                if (ModelState.IsValid)
                 {
-                    TempData[DS.Exitosa] = "Bodega creada Exitosamente";
-                    await _unidadTrabajo.Bodega.Agregar(bodega);
+                    if (bodega.Id == 0)
+                    {
+                        TempData[DS.Exitosa] = "Bodega creada Exitosamente";
+                        await _unidadTrabajo.Bodega.Agregar(bodega);
+                    }
+                    {
+                        TempData[DS.Exitosa] = "Bodega actualizada Exitosamente";
+                        _unidadTrabajo.Bodega.Actuializar(bodega);
+                    }
+                    await _unidadTrabajo.Guardar();
+                    return RedirectToAction(nameof(Index));
                 }
+                TempData[DS.Error] = "Error al guardar Bodega";
+                return View(bodega);
+            }
+
+            #region API
+
+            [HttpGet]
+            public async Task<IActionResult> ObtenerTodos()
+            {
+                var todos = await _unidadTrabajo.Categoria.ObtenerTodos();
+                return Json(new { data = todos });
+            }
+
+            [HttpPost]
+            public async Task<IActionResult> Delete(int id)
+            {
+                var bodegaDb = await _unidadTrabajo.Categoria.Obtener(id);
+                if (bodegaDb == null)
                 {
-					TempData[DS.Exitosa] = "Bodega actualizada Exitosamente";
-					_unidadTrabajo.Bodega.Actuializar(bodega);
+                    return Json(new { success = false, message = "Erro al borrar la Bodega" });
                 }
-                await _unidadTrabajo.Guardar();
-                return RedirectToAction(nameof(Index));
+                else
+                {
+                    _unidadTrabajo.Categoria.Remover(bodegaDb);
+                    await _unidadTrabajo.Guardar();
+                    return Json(new { success = true, message = "Bodega borrada exitosamente" });
+                }
             }
-			TempData[DS.Error] = "Error al guardar Bodega";
-			return View(bodega);
-        }
 
-        #region API
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerTodos()
-        {
-            var todos = await _unidadTrabajo.Bodega.ObtenerTodos();
-            return Json(new { data = todos });
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var bodegaDb = await _unidadTrabajo.Bodega.Obtener(id);
-            if(bodegaDb == null)
+            [ActionName("ValidarNombre")]
+            public async Task<IActionResult> ValidarNombre(string nombre, int id = 0)
             {
-                return Json(new {success = false, message = "Erro al borrar la Bodega"});
-            } else
-            {
-                _unidadTrabajo.Bodega.Remover(bodegaDb);
-                await _unidadTrabajo.Guardar();
-                return Json(new { success = true, message = "Bodega borrada exitosamente" });
+                bool valor = false;
+                var lista = await _unidadTrabajo.Categoria.ObtenerTodos();
+                if (id == 0)
+                {
+                    valor = lista.Any(i => i.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+                }
+                else
+                {
+                    valor = lista.Any(i => i.Nombre.ToLower().Trim() == nombre.ToLower().Trim() && i.Id != id);
+                }
+                if (valor)
+                {
+                    return Json(new { data = true });
+                }
+                return Json(new { data = false });
             }
+            #endregion
         }
-
-        [ActionName("ValidarNombre")]
-        public async Task<IActionResult> ValidarNombre(string nombre, int id = 0)
-        {
-            bool valor = false;
-            var lista = await _unidadTrabajo.Bodega.ObtenerTodos();
-            if(id == 0)
-            {
-                valor = lista.Any(i => i.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
-            } else
-            {
-				valor = lista.Any(i => i.Nombre.ToLower().Trim() == nombre.ToLower().Trim() && i.Id != id);
-			}
-            if(valor)
-            {
-                return Json(new { data = true });
-            }
-			return Json(new { data = false });
-		}
-        #endregion
-    }
 }

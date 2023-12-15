@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "z4fgp9HZubwRI5Nvo9Q7DXITRVsn+MDWIUaTtokIJqs=",
+  "Hash": "6bJJJNJJOeOZ0pgLmekI654ceJoh8/nNViLSfCxnq1o=",
   "Source": "SistemaInventario",
   "BasePath": "_content/SistemaInventario",
   "Mode": "Default",
@@ -1120,6 +1120,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\bodeja.js"
+    },
+    {
+      "Identity": "C:\\Users\\edgar\\source\\repos\\SistemaInventario\\SistemaInventario\\wwwroot\\js\\categoria.js",
+      "SourceId": "SistemaInventario",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\edgar\\source\\repos\\SistemaInventario\\SistemaInventario\\wwwroot\\",
+      "BasePath": "_content/SistemaInventario",
+      "RelativePath": "js/categoria.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\categoria.js"
     },
     {
       "Identity": "C:\\Users\\edgar\\source\\repos\\SistemaInventario\\SistemaInventario\\wwwroot\\js\\site.js",

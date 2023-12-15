@@ -17,6 +17,10 @@
       "PackagePath": "staticwebassets\\js\\bodeja.js"
     },
     {
+      "Id": "C:\\Users\\edgar\\source\\repos\\SistemaInventario\\SistemaInventario\\wwwroot\\js\\categoria.js",
+      "PackagePath": "staticwebassets\\js\\categoria.js"
+    },
+    {
       "Id": "C:\\Users\\edgar\\source\\repos\\SistemaInventario\\SistemaInventario\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
